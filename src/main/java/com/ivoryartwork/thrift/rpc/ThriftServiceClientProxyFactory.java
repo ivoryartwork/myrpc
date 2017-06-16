@@ -83,7 +83,7 @@ public class ThriftServiceClientProxyFactory implements FactoryBean, Initializin
         }
         GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
         poolConfig.maxActive = maxActive;
-        poolConfig.maxIdle = 1;
+        poolConfig.maxIdle = 8;
         poolConfig.minIdle = 0;
         poolConfig.minEvictableIdleTimeMillis = idleTime;
         poolConfig.timeBetweenEvictionRunsMillis = idleTime * 2L;
