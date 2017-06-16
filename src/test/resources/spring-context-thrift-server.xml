@@ -8,8 +8,8 @@
     <bean id="thriftZookeeper" class="com.ivoryartwork.thrift.rpc.zookeeper.ZookeeperFactory"
           destroy-method="close">
         <property name="zkHosts"
-                  value="192.168.59.154:2181"/>
-        <property name="namespace" value="cn.slimsmart.thrift.rpc.demo"/>
+                  value="192.168.56.131:2181"/>
+        <property name="namespace" value="co.smys.platform"/>
         <property name="connectionTimeout" value="3000"/>
         <property name="sessionTimeout" value="3000"/>
         <property name="singleton" value="true"/>
@@ -19,11 +19,11 @@
           destroy-method="close">
         <property name="zkClient" ref="thriftZookeeper"/>
     </bean>
-    <bean id="echoSerivceImpl" class="com.ivoryartwork.thrift.rpc.demo.EchoSerivceImpl"/>
+    <bean id="echoService" class="com.ivoryartwork.thrift.rpc.demo.EchoServiceImpl"/>
     <bean id="helloWorldServiceImpl" class="com.ivoryartwork.thrift.rpc.demo.HelloWorldServiceImpl"></bean>
 
     <bean id="echoRPCSerivce" class="com.ivoryartwork.thrift.rpc.RPCService">
-        <property name="service" ref="echoSerivceImpl"/>
+        <property name="service" ref="echoService"/>
         <property name="version" value="1.0.0"/>
     </bean>
     <bean id="helloWorldRPCService" class="com.ivoryartwork.thrift.rpc.RPCService">
@@ -31,22 +31,22 @@
         <property name="version" value="1.0.0"/>
     </bean>
 
-    <!--<bean class="com.ivoryartwork.thrift.rpc.ThriftMultiplexedServiceServerFactory"-->
-          <!--destroy-method="close">-->
-        <!--<property name="rpcServices">-->
-            <!--<list>-->
-                <!--<ref bean="echoRPCSerivce"></ref>-->
-            <!--</list>-->
-        <!--</property>-->
-        <!--<property name="port" value="9000"/>-->
-        <!--<property name="weight" value="1"/>-->
-        <!--<property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>-->
-    <!--</bean>-->
-    <bean class="com.ivoryartwork.thrift.rpc.ThriftServiceServerFactory"
+    <bean class="com.ivoryartwork.thrift.rpc.ThriftMultiplexedServiceServerFactory"
           destroy-method="close">
-        <property name="rpcService" ref="echoRPCSerivce"/>
-        <property name="port" value="9001"/>
+        <property name="rpcServices">
+            <list>
+                <ref bean="echoRPCSerivce"></ref>
+            </list>
+        </property>
+        <property name="port" value="9000"/>
         <property name="weight" value="1"/>
         <property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>
     </bean>
+    <!--<bean class="com.ivoryartwork.thrift.rpc.ThriftServiceServerFactory"-->
+          <!--destroy-method="close">-->
+        <!--<property name="rpcService" ref="echoRPCSerivce"/>-->
+        <!--<property name="port" value="9001"/>-->
+        <!--<property name="weight" value="1"/>-->
+        <!--<property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>-->
+    <!--</bean>-->
 </beans>

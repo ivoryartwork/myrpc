@@ -32,7 +32,7 @@
         <property name="multiplexedProtocol" value="true"/>
         <property name="serverAddressProvider">
             <bean class="com.ivoryartwork.thrift.rpc.zookeeper.ThriftServerAddressProviderZookeeper">
-                <property name="service" value="co.smys.platform.rpcservice.EchoService"/>
+                <property name="service" value="com.ivoryartwork.thrift.rpc.demo.EchoService"/>
                 <property name="version" value="1.0.0"/>
                 <property name="zkClient" ref="thriftZookeeper"/>
             </bean>

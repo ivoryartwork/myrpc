@@ -1,6 +1,5 @@
 package com.ivoryartwork.thrift.rpc.demo;
 
-import co.smys.platform.rpcservice.EchoService;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
@@ -33,7 +32,7 @@ public class Client {
                         while (true) {
                             try {
                                 EchoService.Iface echoSerivce = (EchoService.Iface) context.getBean("echoService");
-                                echoSerivce.echo("hello--echo");
+                                System.out.println(echoSerivce.echo("hello--echo"));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -61,9 +60,9 @@ public class Client {
     }
 
     static class TThread extends Thread {
-        EchoSerivce.Iface echoSerivce;
+        EchoService.Iface echoSerivce;
 
-        TThread(EchoSerivce.Iface service) {
+        TThread(EchoService.Iface service) {
             echoSerivce = service;
         }
 
@@ -85,7 +84,7 @@ public class Client {
             TTransport transport = new TFramedTransport(socket);
             TProtocol protocol = new TBinaryProtocol(transport);
             TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, "co.smys.platform.rpcservice.EchoService");
-            EchoService.Client client = new EchoService.Client(mp);
+            co.smys.platform.rpcservice.EchoService.Client client = new co.smys.platform.rpcservice.EchoService.Client(mp);
             transport.open();
             while (true) {
                 try {
