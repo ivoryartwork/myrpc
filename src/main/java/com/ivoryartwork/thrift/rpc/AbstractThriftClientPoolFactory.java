@@ -8,6 +8,9 @@ import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 /**
  * 连接池,thrift-client for spring
  */
@@ -65,10 +68,19 @@ public abstract class AbstractThriftClientPoolFactory extends BasePoolableObject
 
     @Override
     public boolean validateObject(TServiceClient client) {
-        TTransport pin = client.getInputProtocol().getTransport();
-        logger.info("validateObject input:{}", pin.isOpen());
-        TTransport pout = client.getOutputProtocol().getTransport();
-        logger.info("validateObject output:{}", pout.isOpen());
-        return pin.isOpen() && pout.isOpen();
+        try {
+            Method method = client.getClass().getMethod("ping");
+            try {
+                method.invoke(client);
+                return true;
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        }
+        return false;
     }
 }
