@@ -8,7 +8,7 @@
     <bean id="thriftZookeeper" class="com.ivoryartwork.thrift.rpc.zookeeper.ZookeeperFactory"
           destroy-method="close">
         <property name="zkHosts"
-                  value="192.168.56.131:2181"/>
+                  value="localhost:2181"/>
         <property name="namespace" value="co.smys.platform"/>
         <property name="connectionTimeout" value="3000"/>
         <property name="sessionTimeout" value="3000"/>
@@ -20,14 +20,9 @@
         <property name="zkClient" ref="thriftZookeeper"/>
     </bean>
     <bean id="echoService" class="com.ivoryartwork.thrift.rpc.demo.EchoServiceImpl"/>
-    <bean id="helloWorldServiceImpl" class="com.ivoryartwork.thrift.rpc.demo.HelloWorldServiceImpl"></bean>
 
     <bean id="echoRPCSerivce" class="com.ivoryartwork.thrift.rpc.RPCService">
         <property name="service" ref="echoService"/>
-        <property name="version" value="1.0.0"/>
-    </bean>
-    <bean id="helloWorldRPCService" class="com.ivoryartwork.thrift.rpc.RPCService">
-        <property name="service" ref="helloWorldServiceImpl"/>
         <property name="version" value="1.0.0"/>
     </bean>
 
@@ -43,10 +38,10 @@
         <property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>
     </bean>
     <!--<bean class="com.ivoryartwork.thrift.rpc.ThriftServiceServerFactory"-->
-          <!--destroy-method="close">-->
-        <!--<property name="rpcService" ref="echoRPCSerivce"/>-->
-        <!--<property name="port" value="9001"/>-->
-        <!--<property name="weight" value="1"/>-->
-        <!--<property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>-->
+    <!--destroy-method="close">-->
+    <!--<property name="rpcService" ref="echoRPCSerivce"/>-->
+    <!--<property name="port" value="9001"/>-->
+    <!--<property name="weight" value="1"/>-->
+    <!--<property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>-->
     <!--</bean>-->
 </beans>
