@@ -17,13 +17,35 @@ public class ThriftMultiplexedServiceServerFactory extends AbstractServiceServer
         this.rpcServices = rpcServices;
     }
 
+    class ServerRegisterThread extends Thread {
+
+        String hostName;
+
+        public ServerRegisterThread(String hostName) {
+            this.hostName = hostName;
+        }
+
+        @Override
+        public void run() {
+            for (RPCService rpcService : rpcServices) {
+                if (thriftServerAddressRegister != null) {
+                    try {
+                        thriftServerAddressRegister.register(rpcService.getName(), rpcService.getVersion(), hostName);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         if (rpcServices.size() == 0) {
             throw new Exception("has no rpcServices");
         }
         //获取服务器的ip地址
-        String hostName = getServerHostName();
+        final String hostName = getServerHostName();
 
         TMultiplexedProcessor processor = new TMultiplexedProcessor();
         for (RPCService rpcService : rpcServices) {
@@ -34,10 +56,7 @@ public class ThriftMultiplexedServiceServerFactory extends AbstractServiceServer
         serverThread = new ServerThread(processor, port);
         serverThread.start();
         // 注册服务
-        for (RPCService rpcService : rpcServices) {
-            if (thriftServerAddressRegister != null) {
-                thriftServerAddressRegister.register(rpcService.getName(), rpcService.getVersion(), hostName);
-            }
-        }
+        ServerRegisterThread serverRegister = new ServerRegisterThread(hostName);
+        serverRegister.start();
     }
 }

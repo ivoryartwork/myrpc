@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.ivoryartwork</groupId>
     <artifactId>thrift-rpc</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <developers>
@@ -16,14 +16,14 @@
 
     <distributionManagement>
         <repository>
-            <id>smys-release</id>
-            <name>smys Release</name>
+            <id>releases</id>
+            <name>deployment</name>
             <url>http://192.168.3.26:8081/nexus/content/repositories/releases/</url>
         </repository>
 
         <snapshotRepository>
-            <id>smys-snapshots</id>
-            <name>smys SNAPSHOTS</name>
+            <id>snapshots</id>
+            <name>deployment</name>
             <url>http://192.168.3.26:8081/nexus/content/repositories/snapshots/</url>
         </snapshotRepository>
     </distributionManagement>
