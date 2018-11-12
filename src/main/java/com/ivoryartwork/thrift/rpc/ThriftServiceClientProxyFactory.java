@@ -1,8 +1,10 @@
 package com.ivoryartwork.thrift.rpc;
 
 import com.ivoryartwork.thrift.rpc.zookeeper.ThriftServerAddressProvider;
-import org.apache.commons.pool.PoolableObjectFactory;
-import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.pool2.PooledObjectFactory;
+import org.apache.commons.pool2.impl.AbandonedConfig;
+import org.apache.commons.pool2.impl.GenericObjectPool;
+import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.slf4j.Logger;
@@ -24,7 +26,7 @@ public class ThriftServiceClientProxyFactory implements FactoryBean, Initializin
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
-    private Integer maxActive = 32;// 最大活跃连接数
+    private Integer maxTotal = 100;// 最大活跃连接数
 
     //是否开启TMultiplexed 协议
     private boolean multiplexedProtocol = false;
@@ -41,7 +43,7 @@ public class ThriftServiceClientProxyFactory implements FactoryBean, Initializin
 
     public AbstractThriftClientPoolFactory.PoolOperationCallBack callback = new AbstractThriftClientPoolFactory.PoolOperationCallBack() {
         @Override
-        public void make(TServiceClient client) {
+        public void create(TServiceClient client) {
             logger.info("create");
         }
 
@@ -51,8 +53,8 @@ public class ThriftServiceClientProxyFactory implements FactoryBean, Initializin
         }
     };
 
-    public void setMaxActive(Integer maxActive) {
-        this.maxActive = maxActive;
+    public void setMaxTotal(Integer maxTotal) {
+        this.maxTotal = maxTotal;
     }
 
     public void setIdleTime(Integer idleTime) {
@@ -75,22 +77,23 @@ public class ThriftServiceClientProxyFactory implements FactoryBean, Initializin
         // 加载Client.Factory类
         Class<TServiceClientFactory<TServiceClient>> fi = (Class<TServiceClientFactory<TServiceClient>>) classLoader.loadClass(serverAddressProvider.getService() + "$Client$Factory");
         TServiceClientFactory<TServiceClient> clientFactory = fi.newInstance();
-        PoolableObjectFactory clientPool = null;
+        PooledObjectFactory clientPool = null;
         if (multiplexedProtocol) {
             clientPool = new ThriftMultiplexedClientPoolFactory(serverAddressProvider, clientFactory, callback);
         } else {
             clientPool = new ThriftClientPoolFactory(serverAddressProvider, clientFactory, callback);
         }
-        GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
-        poolConfig.maxActive = maxActive;
-        poolConfig.maxIdle = 1;
-        poolConfig.minIdle = 0;
-        poolConfig.minEvictableIdleTimeMillis = idleTime;
-        poolConfig.timeBetweenEvictionRunsMillis = idleTime * 2L;
-        poolConfig.testOnBorrow = true;
-        poolConfig.testOnReturn = false;
-        poolConfig.testWhileIdle = false;
-        pool = new GenericObjectPool<TServiceClient>(clientPool, poolConfig);
+        GenericObjectPoolConfig poolConfig = new GenericObjectPoolConfig();
+        AbandonedConfig abandonedConfig = new AbandonedConfig();
+        poolConfig.setMaxTotal(maxTotal);
+        poolConfig.setMaxIdle(10);
+        poolConfig.setMinIdle(0);
+        poolConfig.setMinEvictableIdleTimeMillis(idleTime);
+        poolConfig.setTimeBetweenEvictionRunsMillis(idleTime * 2L);
+        poolConfig.setTestOnBorrow(true);
+        poolConfig.setTestOnReturn(false);
+        poolConfig.setTestWhileIdle(false);
+        pool = new GenericObjectPool<TServiceClient>(clientPool, poolConfig, abandonedConfig);
         proxyClient = Proxy.newProxyInstance(classLoader, new Class[]{objectClass}, new InvocationHandler() {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {

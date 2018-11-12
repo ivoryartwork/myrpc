@@ -1,7 +1,8 @@
 package com.ivoryartwork.thrift.rpc;
 
 import com.ivoryartwork.thrift.rpc.zookeeper.ThriftServerAddressProvider;
-import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool2.BasePooledObjectFactory;
+import org.apache.commons.pool2.PooledObject;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.transport.TTransport;
@@ -11,7 +12,7 @@ import org.slf4j.LoggerFactory;
 /**
  * 连接池,thrift-client for spring
  */
-public abstract class AbstractThriftClientPoolFactory extends BasePoolableObjectFactory<TServiceClient> {
+public abstract class AbstractThriftClientPoolFactory extends BasePooledObjectFactory<TServiceClient> {
 
     protected Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -31,16 +32,17 @@ public abstract class AbstractThriftClientPoolFactory extends BasePoolableObject
         this.callback = callback;
     }
 
-    static interface PoolOperationCallBack {
+    interface PoolOperationCallBack {
         // 销毁client之前执行
         void destroy(TServiceClient client);
 
         // 创建成功是执行
-        void make(TServiceClient client);
+        void create(TServiceClient client);
     }
 
     @Override
-    public void destroyObject(TServiceClient client) throws Exception {
+    public void destroyObject(PooledObject<TServiceClient> p) throws Exception {
+        TServiceClient client = p.getObject();
         if (callback != null) {
             try {
                 callback.destroy(client);
@@ -53,18 +55,12 @@ public abstract class AbstractThriftClientPoolFactory extends BasePoolableObject
         pin.close();
         TTransport pout = client.getOutputProtocol().getTransport();
         pout.close();
+        super.destroyObject(p);
     }
 
     @Override
-    public void activateObject(TServiceClient client) throws Exception {
-    }
-
-    @Override
-    public void passivateObject(TServiceClient client) throws Exception {
-    }
-
-    @Override
-    public boolean validateObject(TServiceClient client) {
+    public boolean validateObject(PooledObject<TServiceClient> p) {
+        TServiceClient client = p.getObject();
         TTransport pin = client.getInputProtocol().getTransport();
         logger.info("validateObject input:{}", pin.isOpen());
         TTransport pout = client.getOutputProtocol().getTransport();

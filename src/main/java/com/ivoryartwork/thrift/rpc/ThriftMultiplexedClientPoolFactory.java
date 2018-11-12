@@ -1,6 +1,8 @@
 package com.ivoryartwork.thrift.rpc;
 
 import com.ivoryartwork.thrift.rpc.zookeeper.ThriftServerAddressProvider;
+import org.apache.commons.pool2.PooledObject;
+import org.apache.commons.pool2.impl.DefaultPooledObject;
 import org.apache.thrift.TServiceClient;
 import org.apache.thrift.TServiceClientFactory;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -26,7 +28,7 @@ public class ThriftMultiplexedClientPoolFactory extends AbstractThriftClientPool
     }
 
     @Override
-    public TServiceClient makeObject() throws Exception {
+    public TServiceClient create() throws Exception {
         InetSocketAddress address = serverAddressProvider.selector();
         if (address == null) {
             throw new ThriftException("No provider available for remote service");
@@ -39,7 +41,7 @@ public class ThriftMultiplexedClientPoolFactory extends AbstractThriftClientPool
         transport.open();
         if (callback != null) {
             try {
-                callback.make(client);
+                callback.create(client);
             } catch (Exception e) {
                 logger.warn("makeObject:{}", e);
             }
@@ -47,4 +49,8 @@ public class ThriftMultiplexedClientPoolFactory extends AbstractThriftClientPool
         return client;
     }
 
+    @Override
+    public PooledObject<TServiceClient> wrap(TServiceClient tServiceClient) {
+        return new DefaultPooledObject<>(tServiceClient);
+    }
 }

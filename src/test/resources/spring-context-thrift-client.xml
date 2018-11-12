@@ -20,14 +20,14 @@
     <bean id="thriftZookeeper" class="com.ivoryartwork.thrift.rpc.zookeeper.ZookeeperFactory"
           destroy-method="close">
         <property name="zkHosts"
-                  value="192.168.59.154:2181"/>
+                  value="127.0.0.1:2181"/>
         <property name="namespace" value="cn.slimsmart.thrift.rpc.demo"/>
         <property name="connectionTimeout" value="3000"/>
         <property name="sessionTimeout" value="3000"/>
         <property name="singleton" value="true"/>
     </bean>
     <bean id="echoSerivce" class="com.ivoryartwork.thrift.rpc.ThriftServiceClientProxyFactory" destroy-method="close">
-        <property name="maxActive" value="5"/>
+        <property name="maxTotal" value="5"/>
         <property name="idleTime" value="1800000"/>
         <property name="multiplexedProtocol" value="false"/>
         <property name="serverAddressProvider">
@@ -39,8 +39,9 @@
         </property>
     </bean>
 
-    <bean id="helloWorldService" class="com.ivoryartwork.thrift.rpc.ThriftServiceClientProxyFactory" destroy-method="close">
-        <property name="maxActive" value="5"/>
+    <bean id="helloWorldService" class="com.ivoryartwork.thrift.rpc.ThriftServiceClientProxyFactory"
+          destroy-method="close">
+        <property name="maxTotal" value="5"/>
         <property name="idleTime" value="1800000"/>
         <property name="multiplexedProtocol" value="false"/>
         <property name="serverAddressProvider">

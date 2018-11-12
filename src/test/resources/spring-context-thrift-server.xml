@@ -8,7 +8,7 @@
     <bean id="thriftZookeeper" class="com.ivoryartwork.thrift.rpc.zookeeper.ZookeeperFactory"
           destroy-method="close">
         <property name="zkHosts"
-                  value="192.168.59.154:2181"/>
+                  value="127.0.0.1:2181"/>
         <property name="namespace" value="cn.slimsmart.thrift.rpc.demo"/>
         <property name="connectionTimeout" value="3000"/>
         <property name="sessionTimeout" value="3000"/>
@@ -32,15 +32,15 @@
     </bean>
 
     <!--<bean class="com.ivoryartwork.thrift.rpc.ThriftMultiplexedServiceServerFactory"-->
-          <!--destroy-method="close">-->
-        <!--<property name="rpcServices">-->
-            <!--<list>-->
-                <!--<ref bean="echoRPCSerivce"></ref>-->
-            <!--</list>-->
-        <!--</property>-->
-        <!--<property name="port" value="9000"/>-->
-        <!--<property name="weight" value="1"/>-->
-        <!--<property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>-->
+    <!--destroy-method="close">-->
+    <!--<property name="rpcServices">-->
+    <!--<list>-->
+    <!--<ref bean="echoRPCSerivce"></ref>-->
+    <!--</list>-->
+    <!--</property>-->
+    <!--<property name="port" value="9000"/>-->
+    <!--<property name="weight" value="1"/>-->
+    <!--<property name="thriftServerAddressRegister" ref="sericeAddressRegister"/>-->
     <!--</bean>-->
     <bean class="com.ivoryartwork.thrift.rpc.ThriftServiceServerFactory"
           destroy-method="close">
