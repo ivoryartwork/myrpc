@@ -76,7 +76,7 @@ public class ThriftServerAddressProviderZookeeper implements ThriftServerAddress
     }
 
     private String getServicePath() {
-        return "/" + service + "/" + version;
+        return "/" + getSimpleName() + "/" + version;
     }
 
     private void buildPathChildrenCache(final CuratorFramework client, String path, Boolean cacheData) throws Exception {
@@ -193,4 +193,12 @@ public class ThriftServerAddressProviderZookeeper implements ThriftServerAddress
         return service;
     }
 
+    @Override
+    public String getSimpleName() {
+        int index = service.lastIndexOf(".");
+        if (index == -1) {
+            return service;
+        }
+        return service.substring(index + 1);
+    }
 }

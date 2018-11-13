@@ -36,7 +36,7 @@ public class RPCService {
             if (!cname.equals("Iface")) {
                 continue;
             }
-            return clazz.getEnclosingClass().getName();
+            return clazz.getEnclosingClass().getSimpleName();
         }
         throw new IllegalClassFormatException("service-class should implements Iface");
     }
