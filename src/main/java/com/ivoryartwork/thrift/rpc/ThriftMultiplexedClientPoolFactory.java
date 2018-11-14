@@ -36,7 +36,7 @@ public class ThriftMultiplexedClientPoolFactory extends AbstractThriftClientPool
         TSocket tsocket = new TSocket(address.getHostName(), address.getPort());
         TTransport transport = new TFramedTransport(tsocket);
         TProtocol protocol = new TBinaryProtocol(transport);
-        TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, serverAddressProvider.getService());
+        TMultiplexedProtocol mp = new TMultiplexedProtocol(protocol, serverAddressProvider.getSimpleName());
         TServiceClient client = this.clientFactory.getClient(mp);
         transport.open();
         if (callback != null) {
